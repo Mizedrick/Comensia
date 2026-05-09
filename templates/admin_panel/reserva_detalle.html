@@ -1,0 +1,68 @@
+{% extends 'admin_panel/base_admin.html' %}
+{% block title %}Detalle Reserva #{{ reserva.codigo }} - Comensia{% endblock %}
+{% block content %}
+<div class="container py-4" style="max-width: 700px;">
+  <a href="{% url 'admin_reservas' %}" class="btn btn-outline-secondary btn-sm mb-3">
+    <i class="bi bi-arrow-left"></i> Volver
+  </a>
+  <div class="card border-0 shadow">
+    <div class="card-header bg-white border-0 pt-4 px-4">
+      <div class="d-flex justify-content-between align-items-center">
+        <h4 class="fw-bold mb-0">Reserva <span class="font-monospace text-brand">#{{ reserva.codigo }}</span></h4>
+        <span class="badge fs-6 badge-{{ reserva.estado }}">{{ reserva.get_estado_display }}</span>
+      </div>
+    </div>
+    <div class="card-body p-4">
+      <div class="row g-4">
+        <div class="col-md-6">
+          <h6 class="text-muted text-uppercase small mb-3">Servicio</h6>
+          <p class="fw-bold fs-5 mb-1">{{ reserva.servicio.nombre }}</p>
+          <p class="text-muted small">{{ reserva.servicio.duracion_minutos }} min · ${{ reserva.servicio.precio|floatformat:0 }}</p>
+        </div>
+        <div class="col-md-6">
+          <h6 class="text-muted text-uppercase small mb-3">Fecha y Hora</h6>
+          <p class="fw-bold fs-5 mb-1">{{ reserva.fecha|date:"d/m/Y" }} · {{ reserva.hora|time:"H:i" }}</p>
+        </div>
+        <div class="col-12"><hr class="my-0"></div>
+        <div class="col-md-6">
+          <h6 class="text-muted text-uppercase small mb-3">Cliente</h6>
+          <p class="fw-bold mb-1">{{ reserva.cliente.nombre }}</p>
+          <p class="text-muted small mb-1"><i class="bi bi-envelope"></i> {{ reserva.cliente.email }}</p>
+          <p class="text-muted small"><i class="bi bi-phone"></i> {{ reserva.cliente.telefono }}</p>
+          <a href="{% url 'admin_cliente_detalle' reserva.cliente.pk %}" class="btn btn-sm btn-outline-secondary">
+            Ver historial del cliente
+          </a>
+        </div>
+        {% if reserva.notas %}
+        <div class="col-md-6">
+          <h6 class="text-muted text-uppercase small mb-3">Notas</h6>
+          <p class="text-muted">{{ reserva.notas }}</p>
+        </div>
+        {% endif %}
+      </div>
+
+      {% if reserva.estado in 'pendiente,confirmada' %}
+      <div class="border-top mt-4 pt-4 d-flex gap-2 flex-wrap">
+        {% if reserva.estado == 'pendiente' %}
+        <form method="post" action="{% url 'admin_reserva_accion' reserva.pk %}">
+          {% csrf_token %}<input type="hidden" name="accion" value="confirmar">
+          <button class="btn btn-success"><i class="bi bi-check-circle"></i> Confirmar</button>
+        </form>
+        {% endif %}
+        {% if reserva.estado == 'confirmada' %}
+        <form method="post" action="{% url 'admin_reserva_accion' reserva.pk %}">
+          {% csrf_token %}<input type="hidden" name="accion" value="completar">
+          <button class="btn btn-brand"><i class="bi bi-check2-all"></i> Marcar Completada</button>
+        </form>
+        {% endif %}
+        <form method="post" action="{% url 'admin_reserva_accion' reserva.pk %}"
+              onsubmit="return confirm('¿Cancelar esta reserva?')">
+          {% csrf_token %}<input type="hidden" name="accion" value="cancelar">
+          <button class="btn btn-outline-danger"><i class="bi bi-x-circle"></i> Cancelar</button>
+        </form>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

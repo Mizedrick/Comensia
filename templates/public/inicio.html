@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% block title %}Comensia - Reservas Online{% endblock %}
+{% block content %}
+<section class="py-5 text-white text-center" style="background: linear-gradient(135deg, var(--brand-dark), var(--brand));">
+  <div class="container py-4">
+    <h1 class="display-4 fw-bold mb-3"><i class="bi bi-calendar-check"></i> Comensia</h1>
+    <p class="lead mb-4">Reserva tu espacio de forma rápida y sencilla</p>
+    <a href="{% url 'reservar' %}" class="btn btn-lg text-white fw-bold px-5 py-3" style="background:var(--accent); border:none;">
+      <i class="bi bi-plus-circle"></i> Reservar Ahora
+    </a>
+    <a href="{% url 'mi_reserva' %}" class="btn btn-lg btn-outline-light ms-3 px-4 py-3">
+      <i class="bi bi-search"></i> Consultar mi Reserva
+    </a>
+  </div>
+</section>
+
+<section class="py-5">
+  <div class="container">
+    <h2 class="text-center fw-bold mb-5 text-brand">Nuestros Servicios</h2>
+    <div class="row g-4">
+      {% for s in servicios %}
+      <div class="col-md-4">
+        <div class="card h-100 border-0 shadow-sm">
+          <div class="card-body p-4">
+            <div class="d-flex align-items-center mb-3">
+              <div class="rounded-circle d-flex align-items-center justify-content-center me-3" style="width:50px;height:50px;background:var(--brand);color:white;">
+                <i class="bi bi-star fs-5"></i>
+              </div>
+              <div>
+                <h5 class="card-title mb-0 fw-bold">{{ s.nombre }}</h5>
+                <span class="text-muted small">{{ s.duracion_minutos }} min</span>
+              </div>
+            </div>
+            {% if s.descripcion %}<p class="text-muted small">{{ s.descripcion }}</p>{% endif %}
+            <div class="d-flex justify-content-between align-items-center mt-auto pt-3 border-top">
+              {% if s.precio %}<strong class="text-brand">${{ s.precio|floatformat:0 }}</strong>{% else %}<span></span>{% endif %}
+              <a href="{% url 'reservar' %}?servicio={{ s.id }}" class="btn btn-sm btn-brand px-3">Reservar</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <div class="col-12 text-center text-muted">
+        <i class="bi bi-inbox fs-1"></i>
+        <p class="mt-2">Próximamente más servicios disponibles.</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="py-5 bg-white">
+  <div class="container">
+    <div class="row g-4 text-center">
+      <div class="col-md-4">
+        <div class="p-4"><i class="bi bi-lightning-charge fs-1 text-brand"></i>
+          <h5 class="fw-bold mt-3">Rápido y fácil</h5>
+          <p class="text-muted">Reserva en menos de 2 minutos sin necesidad de registrarte.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="p-4"><i class="bi bi-shield-check fs-1 text-brand"></i>
+          <h5 class="fw-bold mt-3">Confirmación inmediata</h5>
+          <p class="text-muted">Recibe un código de reserva para gestionar tu cita.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="p-4"><i class="bi bi-arrow-repeat fs-1 text-brand"></i>
+          <h5 class="fw-bold mt-3">Cancela cuando quieras</h5>
+          <p class="text-muted">Gestiona o cancela tu reserva en cualquier momento.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

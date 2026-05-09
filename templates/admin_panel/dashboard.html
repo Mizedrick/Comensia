@@ -1,0 +1,77 @@
+{% extends 'admin_panel/base_admin.html' %}
+{% block title %}Dashboard - Comensia{% endblock %}
+{% block content %}
+<div class="container-fluid px-4 py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h3 class="fw-bold mb-0">Dashboard</h3>
+      <p class="text-muted small mb-0">Hoy: {{ hoy|date:"l, d \d\e F Y" }}</p>
+    </div>
+    <a href="{% url 'admin_reservas' %}" class="btn btn-brand"><i class="bi bi-plus"></i> Ver Reservas</a>
+  </div>
+
+  <div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+      <div class="card border-0 shadow-sm text-center p-3">
+        <div class="fs-1 fw-bold text-brand">{{ total_hoy }}</div>
+        <div class="text-muted small">Total hoy</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="card border-0 shadow-sm text-center p-3">
+        <div class="fs-1 fw-bold text-warning">{{ pendientes_hoy }}</div>
+        <div class="text-muted small">Pendientes</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="card border-0 shadow-sm text-center p-3">
+        <div class="fs-1 fw-bold text-success">{{ confirmadas_hoy }}</div>
+        <div class="text-muted small">Confirmadas</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="card border-0 shadow-sm text-center p-3">
+        <div class="fs-1 fw-bold text-danger">{{ canceladas_hoy }}</div>
+        <div class="text-muted small">Canceladas</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card border-0 shadow-sm">
+    <div class="card-header bg-white border-0 pt-3">
+      <h5 class="fw-bold mb-0"><i class="bi bi-clock-history"></i> Próximas Reservas</h5>
+    </div>
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Código</th><th>Cliente</th><th>Servicio</th>
+              <th>Fecha</th><th>Hora</th><th>Estado</th><th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for r in proximas %}
+            <tr>
+              <td class="font-monospace fw-bold text-brand">#{{ r.codigo }}</td>
+              <td>{{ r.cliente.nombre }}</td>
+              <td>{{ r.servicio.nombre }}</td>
+              <td>{{ r.fecha|date:"d/m/Y" }}</td>
+              <td>{{ r.hora|time:"H:i" }}</td>
+              <td><span class="badge badge-{{ r.estado }}">{{ r.get_estado_display }}</span></td>
+              <td>
+                <a href="{% url 'admin_reserva_detalle' r.pk %}" class="btn btn-sm btn-outline-secondary">
+                  <i class="bi bi-eye"></i>
+                </a>
+              </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="7" class="text-center text-muted py-4">No hay reservas próximas.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

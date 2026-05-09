@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block title %}Reserva Confirmada - Comensia{% endblock %}
+{% block content %}
+<div class="container py-5" style="max-width: 560px;">
+  <div class="card border-0 shadow text-center p-5">
+    <div class="mb-4">
+      <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width:80px;height:80px;background:#d4edda;">
+        <i class="bi bi-check-lg text-success" style="font-size:2.5rem;"></i>
+      </div>
+      <h2 class="fw-bold text-success">¡Reserva recibida!</h2>
+      <p class="text-muted">Tu reserva ha sido registrada exitosamente.</p>
+    </div>
+    <div class="bg-light rounded p-4 mb-4 text-start">
+      <div class="mb-3 text-center">
+        <p class="text-muted small mb-1">Código de reserva</p>
+        <h3 class="fw-bold text-brand font-monospace">#{{ reserva.codigo }}</h3>
+      </div>
+      <hr>
+      <div class="row g-2 small">
+        <div class="col-6 text-muted">Servicio:</div>
+        <div class="col-6 fw-semibold">{{ reserva.servicio.nombre }}</div>
+        <div class="col-6 text-muted">Fecha:</div>
+        <div class="col-6 fw-semibold">{{ reserva.fecha|date:"d/m/Y" }}</div>
+        <div class="col-6 text-muted">Hora:</div>
+        <div class="col-6 fw-semibold">{{ reserva.hora|time:"H:i" }}</div>
+        <div class="col-6 text-muted">Estado:</div>
+        <div class="col-6"><span class="badge badge-pendiente">Pendiente</span></div>
+        <div class="col-6 text-muted">Cliente:</div>
+        <div class="col-6 fw-semibold">{{ reserva.cliente.nombre }}</div>
+      </div>
+    </div>
+    <p class="text-muted small mb-4">
+      <i class="bi bi-envelope"></i> Se ha enviado un resumen a <strong>{{ reserva.cliente.email }}</strong>
+    </p>
+    <div class="d-grid gap-2">
+      <a href="{% url 'mi_reserva' %}" class="btn btn-brand">
+        <i class="bi bi-search"></i> Consultar mi reserva
+      </a>
+      <a href="{% url 'inicio' %}" class="btn btn-outline-secondary">Volver al inicio</a>
+    </div>
+  </div>
+</div>
+{% endblock %}
