@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Comensia{% endblock %}</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    :root {
+      --brand: #2D6A4F;
+      --brand-light: #52B788;
+      --brand-dark: #1B4332;
+      --accent: #F4A261;
+    }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f8f9fa; }
+    .navbar-brand { font-weight: 800; font-size: 1.5rem; color: var(--brand) !important; }
+    .btn-brand { background: var(--brand); color: white; border: none; }
+    .btn-brand:hover { background: var(--brand-dark); color: white; }
+    .text-brand { color: var(--brand) !important; }
+    .bg-brand { background: var(--brand) !important; }
+    .badge-pendiente { background: #ffc107; color: #000; }
+    .badge-confirmada { background: #198754; }
+    .badge-cancelada { background: #dc3545; }
+    .badge-completada { background: #6c757d; }
+  </style>
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+{% block navbar %}
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+  <div class="container">
+    <a class="navbar-brand" href="{% url 'inicio' %}">
+      <i class="bi bi-calendar-check-fill text-brand"></i> Comensia
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="nav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link" href="{% url 'inicio' %}">Inicio</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'reservar' %}">Reservar</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'mi_reserva' %}">Mi Reserva</a></li>
+        {% if user.is_authenticated %}
+        <li class="nav-item"><a class="nav-link" href="{% url 'dashboard' %}"><i class="bi bi-grid"></i> Panel</a></li>
+        <li class="nav-item"><a class="nav-link text-danger" href="{% url 'logout' %}"><i class="bi bi-box-arrow-right"></i> Salir</a></li>
+        {% else %}
+        <li class="nav-item"><a class="nav-link" href="{% url 'login' %}"><i class="bi bi-lock"></i> Acceso</a></li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>
+{% endblock %}
+
+<main>
+  {% if messages %}
+  <div class="container mt-3">
+    {% for msg in messages %}
+    <div class="alert alert-{{ msg.tags }} alert-dismissible fade show" role="alert">
+      {{ msg }} <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+  {% block content %}{% endblock %}
+</main>
+
+<footer class="bg-white border-top mt-5 py-4 text-center text-muted small">
+  <div class="container">© 2024 Comensia · Sistema de Reservas</div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

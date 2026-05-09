@@ -1,0 +1,85 @@
+{% extends 'admin_panel/base_admin.html' %}
+{% block title %}Horarios - Comensia{% endblock %}
+{% block content %}
+<div class="container-fluid px-4 py-4">
+  <h3 class="fw-bold mb-4"><i class="bi bi-clock"></i> Gestión de Horarios</h3>
+  <div class="row g-4">
+    <div class="col-lg-7">
+      <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header bg-white border-0 pt-3 px-4 d-flex justify-content-between align-items-center">
+          <h5 class="fw-bold mb-0">Horarios de Atención</h5>
+        </div>
+        <div class="card-body p-4">
+          <form method="post" action="{% url 'admin_horario_crear' %}" class="row g-2 mb-4 border-bottom pb-4">
+            {% csrf_token %}
+            <div class="col-md-3">{{ form_horario.dia_semana.label_tag }}{{ form_horario.dia_semana }}</div>
+            <div class="col-md-2">{{ form_horario.hora_inicio.label_tag }}{{ form_horario.hora_inicio }}</div>
+            <div class="col-md-2">{{ form_horario.hora_fin.label_tag }}{{ form_horario.hora_fin }}</div>
+            <div class="col-md-2">{{ form_horario.capacidad_maxima.label_tag }}{{ form_horario.capacidad_maxima }}</div>
+            <div class="col-md-3 d-flex align-items-end">
+              <button class="btn btn-brand w-100"><i class="bi bi-plus"></i> Agregar</button>
+            </div>
+          </form>
+          <table class="table table-sm table-hover mb-0">
+            <thead><tr><th>Día</th><th>Inicio</th><th>Fin</th><th>Cap.</th><th>Estado</th><th></th></tr></thead>
+            <tbody>
+              {% for h in horarios %}
+              <tr>
+                <td>{{ h.get_dia_semana_display }}</td>
+                <td>{{ h.hora_inicio|time:"H:i" }}</td>
+                <td>{{ h.hora_fin|time:"H:i" }}</td>
+                <td>{{ h.capacidad_maxima }}</td>
+                <td>{% if h.activo %}<span class="badge bg-success">Activo</span>{% else %}<span class="badge bg-secondary">Inactivo</span>{% endif %}</td>
+                <td>
+                  <form method="post" action="{% url 'admin_horario_eliminar' h.pk %}"
+                        onsubmit="return confirm('¿Eliminar este horario?')">
+                    {% csrf_token %}
+                    <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                  </form>
+                </td>
+              </tr>
+              {% empty %}
+              <tr><td colspan="6" class="text-center text-muted py-3">No hay horarios configurados.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-5">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white border-0 pt-3 px-4">
+          <h5 class="fw-bold mb-0"><i class="bi bi-calendar-x"></i> Fechas Bloqueadas</h5>
+        </div>
+        <div class="card-body p-4">
+          <form method="post" action="{% url 'admin_fecha_bloquear' %}" class="mb-4">
+            {% csrf_token %}
+            <div class="mb-2">{{ form_bloqueo.fecha.label_tag }}{{ form_bloqueo.fecha }}</div>
+            <div class="mb-3">{{ form_bloqueo.motivo.label_tag }}{{ form_bloqueo.motivo }}</div>
+            <button class="btn btn-warning w-100"><i class="bi bi-lock"></i> Bloquear fecha</button>
+          </form>
+          <ul class="list-group list-group-flush">
+            {% for f in fechas_bloqueadas %}
+            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+              <div>
+                <strong>{{ f.fecha|date:"d/m/Y" }}</strong>
+                {% if f.motivo %}<br><span class="text-muted small">{{ f.motivo }}</span>{% endif %}
+              </div>
+              <form method="post" action="{% url 'admin_fecha_desbloquear' f.pk %}">
+                {% csrf_token %}
+                <button class="btn btn-sm btn-outline-success" title="Desbloquear">
+                  <i class="bi bi-unlock"></i>
+                </button>
+              </form>
+            </li>
+            {% empty %}
+            <li class="list-group-item text-muted px-0 text-center">Sin fechas bloqueadas</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

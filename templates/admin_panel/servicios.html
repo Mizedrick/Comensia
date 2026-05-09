@@ -1,0 +1,46 @@
+{% extends 'admin_panel/base_admin.html' %}
+{% block title %}Servicios - Comensia{% endblock %}
+{% block content %}
+<div class="container-fluid px-4 py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="fw-bold mb-0"><i class="bi bi-grid-3x3-gap"></i> Servicios</h3>
+    <a href="{% url 'admin_servicio_crear' %}" class="btn btn-brand">
+      <i class="bi bi-plus"></i> Nuevo Servicio
+    </a>
+  </div>
+  <div class="row g-3">
+    {% for s in servicios %}
+    <div class="col-md-4">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body p-4">
+          <div class="d-flex justify-content-between align-items-start mb-2">
+            <h5 class="fw-bold mb-0">{{ s.nombre }}</h5>
+            {% if s.activo %}<span class="badge bg-success">Activo</span>
+            {% else %}<span class="badge bg-secondary">Inactivo</span>{% endif %}
+          </div>
+          {% if s.descripcion %}<p class="text-muted small">{{ s.descripcion }}</p>{% endif %}
+          <div class="text-muted small mt-2">
+            <i class="bi bi-clock"></i> {{ s.duracion_minutos }} min &nbsp;
+            {% if s.precio %}<i class="bi bi-currency-dollar"></i> ${{ s.precio|floatformat:0 }}{% endif %}
+          </div>
+        </div>
+        <div class="card-footer bg-white border-0 pt-0 pb-3 px-4">
+          <a href="{% url 'admin_servicio_editar' s.pk %}" class="btn btn-sm btn-outline-primary me-2">
+            <i class="bi bi-pencil"></i> Editar
+          </a>
+          <form method="post" action="{% url 'admin_servicio_eliminar' s.pk %}" class="d-inline"
+                onsubmit="return confirm('¿Eliminar este servicio?')">
+            {% csrf_token %}
+            <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i> Eliminar</button>
+          </form>
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    <div class="col-12 text-center text-muted py-5">
+      <i class="bi bi-inbox fs-1"></i><p class="mt-2">No hay servicios creados aún.</p>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

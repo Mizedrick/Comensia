@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+{% block title %}Hacer una Reserva - Comensia{% endblock %}
+{% block content %}
+<div class="container py-5" style="max-width: 680px;">
+  <h2 class="fw-bold mb-1 text-brand"><i class="bi bi-calendar-plus"></i> Nueva Reserva</h2>
+  <p class="text-muted mb-4">Completa el formulario para reservar tu espacio.</p>
+
+  <div class="card border-0 shadow-sm">
+    <div class="card-body p-4">
+      <form method="post" id="reservaForm">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+        <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+        {% endif %}
+
+        <h6 class="fw-bold text-muted mb-3 text-uppercase small">1 · Selecciona el servicio</h6>
+        <div class="mb-3">
+          {{ form.servicio.label_tag }}
+          {{ form.servicio }}
+          {% if form.servicio.errors %}<div class="text-danger small">{{ form.servicio.errors }}</div>{% endif %}
+        </div>
+
+        <h6 class="fw-bold text-muted mb-3 text-uppercase small mt-4">2 · Elige fecha y hora</h6>
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            {{ form.fecha.label_tag }}
+            {{ form.fecha }}
+            {% if form.fecha.errors %}<div class="text-danger small">{{ form.fecha.errors }}</div>{% endif %}
+          </div>
+          <div class="col-md-6 mb-3">
+            {{ form.hora.label_tag }}
+            <select name="hora" id="id_hora" class="form-select">
+              <option value="">— Elige una fecha primero —</option>
+            </select>
+            {% if form.hora.errors %}<div class="text-danger small">{{ form.hora.errors }}</div>{% endif %}
+            <div id="cargandoHoras" class="text-muted small mt-1 d-none">
+              <i class="bi bi-arrow-repeat spin"></i> Cargando horarios...
+            </div>
+          </div>
+        </div>
+
+        <h6 class="fw-bold text-muted mb-3 text-uppercase small mt-4">3 · Tus datos</h6>
+        <div class="mb-3">
+          {{ form.nombre.label_tag }}
+          {{ form.nombre }}
+          {% if form.nombre.errors %}<div class="text-danger small">{{ form.nombre.errors }}</div>{% endif %}
+        </div>
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            {{ form.telefono.label_tag }}
+            {{ form.telefono }}
+            {% if form.telefono.errors %}<div class="text-danger small">{{ form.telefono.errors }}</div>{% endif %}
+          </div>
+          <div class="col-md-6 mb-3">
+            {{ form.email.label_tag }}
+            {{ form.email }}
+            {% if form.email.errors %}<div class="text-danger small">{{ form.email.errors }}</div>{% endif %}
+          </div>
+        </div>
+        <div class="mb-4">
+          {{ form.notas.label_tag }}
+          {{ form.notas }}
+        </div>
+
+        <button type="submit" class="btn btn-brand w-100 py-3 fw-bold fs-5">
+          <i class="bi bi-check-circle"></i> Confirmar Reserva
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<style>.spin { animation: spin 1s linear infinite; }
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }</style>
+<script>
+const fechaInput = document.getElementById('id_fecha');
+const horaSelect = document.getElementById('id_hora');
+const cargando = document.getElementById('cargandoHoras');
+
+fechaInput.addEventListener('change', function() {
+  const fecha = this.value;
+  if (!fecha) return;
+  cargando.classList.remove('d-none');
+  horaSelect.innerHTML = '<option value="">Cargando...</option>';
+
+  fetch(`/api/horas-disponibles/?fecha=${fecha}`)
+    .then(r => r.json())
+    .then(data => {
+      cargando.classList.add('d-none');
+      if (data.horas.length === 0) {
+        horaSelect.innerHTML = '<option value="">No hay horarios disponibles</option>';
+      } else {
+        horaSelect.innerHTML = '<option value="">— Selecciona hora —</option>';
+        data.horas.forEach(h => {
+          const opt = document.createElement('option');
+          opt.value = h.value;
+          opt.textContent = h.label;
+          horaSelect.appendChild(opt);
+        });
+      }
+    })
+    .catch(() => {
+      cargando.classList.add('d-none');
+      horaSelect.innerHTML = '<option value="">Error al cargar horarios</option>';
+    });
+});
+
+// Pre-select service from URL params
+const params = new URLSearchParams(window.location.search);
+const svcId = params.get('servicio');
+if (svcId) {
+  const sel = document.getElementById('id_servicio');
+  if (sel) sel.value = svcId;
+}
+</script>
+{% endblock %}
